@@ -32,7 +32,7 @@ Fonte: scheda App Store e recensioni (letto il 2026-11-21).
 | 1a | Analisi statica dell'IPA: Info.plist, entitlements, estensioni, risorse in chiaro (JS/CSS/HTML), storyboard, framework | `analysis/static.md` | fatto 2026-11-21 |
 | 1b | Analisi a runtime: traffico con mitmproxy (sito diretto o proxy?), cosa nasconde a schermo per ogni social | `analysis/runtime.md` | da fare |
 | 2 | Specifica di comportamento scritta da noi (cosa bloccare, cosa tenere, per social) | `docs/SPEC.md` | da fare |
-| 3 | MVP: SwiftUI + WKWebView su instagram.com, regole CSS/JS proprie, test | app che compila | da fare |
+| 3 | MVP: SwiftUI + WKWebView su instagram.com, regole CSS/JS proprie, test | app che compila | in corso: regole + 7 test verdi, build iOS da verificare |
 | 4 | YouTube (niente Shorts, niente home suggerita) | | da fare |
 | 5 | Screen Time: blocco app native + schermata di rimando (solo se il Personal Team lo consente) | | da fare |
 | 6 | Pubblicazione: README, release, istruzioni di installazione (sideload/TestFlight) | | da fare |

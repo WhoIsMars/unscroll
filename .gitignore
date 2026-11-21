@@ -4,3 +4,6 @@ analysis/raw/
 xcuserdata/
 DerivedData/
 build/
+*.xcodeproj/
+.build/
+.swiftpm/
