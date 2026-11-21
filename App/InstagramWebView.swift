@@ -4,7 +4,10 @@ import WebKit
 
 /// Sito mobile di Instagram con Reels, Esplora e feed reindirizzati (regole in UnscrollCore).
 struct InstagramWebView: UIViewRepresentable {
-    let start: URL
+    /// Pagina chiesta dalla barra nativa: a ogni cambio la si carica.
+    let target: URL
+    /// Cambia a ogni tocco, così ritoccare "Messaggi" dentro una chat torna alla lista.
+    let tapID: Int
 
     // Le classi di Instagram sono offuscate: si nascondono i link per href.
     private static let hideCSS = """
@@ -33,14 +36,20 @@ struct InstagramWebView: UIViewRepresentable {
             guard let url = wv.url, let target = InstagramRules.redirect(for: url) else { return }
             wv.load(URLRequest(url: target))
         }
-        webView.load(URLRequest(url: start))
+        context.coordinator.loadedTap = tapID
+        webView.load(URLRequest(url: target))
         return webView
     }
 
-    func updateUIView(_ webView: WKWebView, context: Context) {}
+    func updateUIView(_ webView: WKWebView, context: Context) {
+        guard context.coordinator.loadedTap != tapID else { return }
+        context.coordinator.loadedTap = tapID
+        webView.load(URLRequest(url: target))
+    }
 
     final class Coordinator: NSObject, WKNavigationDelegate {
         var urlObservation: NSKeyValueObservation?
+        var loadedTap = 0
 
         func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction,
                      decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
