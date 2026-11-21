@@ -29,12 +29,12 @@ Fonte: scheda App Store e recensioni (letto il 2026-11-21).
 | # | Fase | Output | Stato |
 |---|------|--------|-------|
 | 0 | Setup: repo, REA, ipatool, mitmproxy | questo piano | fatto 2026-11-21 |
-| 1a | Analisi statica dell'IPA: Info.plist, entitlements, estensioni, risorse in chiaro (JS/CSS/HTML), storyboard, framework | `analysis/static.md` | da fare |
+| 1a | Analisi statica dell'IPA: Info.plist, entitlements, estensioni, risorse in chiaro (JS/CSS/HTML), storyboard, framework | `analysis/static.md` | fatto 2026-11-21 |
 | 1b | Analisi a runtime: traffico con mitmproxy (sito diretto o proxy?), cosa nasconde a schermo per ogni social | `analysis/runtime.md` | da fare |
 | 2 | Specifica di comportamento scritta da noi (cosa bloccare, cosa tenere, per social) | `docs/SPEC.md` | da fare |
 | 3 | MVP: SwiftUI + WKWebView su instagram.com, regole CSS/JS proprie, test | app che compila | da fare |
 | 4 | YouTube (niente Shorts, niente home suggerita) | | da fare |
-| 5 | Screen Time: blocco app native + schermata di rimando | | da fare |
+| 5 | Screen Time: blocco app native + schermata di rimando (solo se il Personal Team lo consente) | | da fare |
 | 6 | Pubblicazione: README, release, istruzioni di installazione (sideload/TestFlight) | | da fare |
 
 ## Cosa serve dall'utente
@@ -44,9 +44,18 @@ Fonte: scheda App Store e recensioni (letto il 2026-11-21).
 - **Login Apple ID per ipatool** (`ipatool auth login -e <email>`), solo per scaricare
   l'IPA di SocialLite (gratuita). Il login lo fa l'utente nel terminale, mai in chat.
 - **iPhone** con il certificato di mitmproxy installato per la fase 1b.
-- Da verificare: il blocco app (fase 5) richiede la capability Family Controls, che per
-  la distribuzione serve un Apple Developer Program a pagamento (99 $/anno) e
-  un'approvazione Apple. Per uso personale in sviluppo potrebbe bastare un account gratuito.
+## Vincolo: nessun Apple Developer Program a pagamento (deciso 2026-11-21)
+
+Si firma con l'account Apple gratuito ("Personal Team" in Xcode). Conseguenze (da
+verificare in Xcode appena installato):
+
+- l'app installata scade dopo 7 giorni e va reinstallata (o rinnovata con SideStore);
+- niente notifiche push: le notifiche dei DM con app chiusa sono fuori scopo;
+- Family Controls (Screen Time) probabilmente non disponibile: la fase 5 diventa
+  "prova una volta, se Xcode rifiuta la capability si salta". Alternativa senza
+  entitlement: disinstallare le app native, che è anche il consiglio delle FAQ di SocialLite;
+- quindi l'MVP è **una sola app senza estensioni**: WKWebView + regole CSS/JS, che non
+  richiede nessun entitlement speciale.
 
 ## Limiti di distribuzione (da verificare)
 
