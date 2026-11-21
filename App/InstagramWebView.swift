@@ -24,6 +24,7 @@ struct InstagramWebView: UIViewRepresentable {
       if (!m) { m = document.createElement('meta'); m.name = 'viewport'; document.head.appendChild(m); }
       m.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';
     });
+    \(InstagramScripts.reelLock)
     """
 
     func makeCoordinator() -> Coordinator { Coordinator() }
