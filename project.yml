@@ -28,3 +28,5 @@ targets:
         CURRENT_PROJECT_VERSION: 1
         SWIFT_VERSION: 5.0
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_NSCameraUsageDescription: Per scattare foto e video da pubblicare su Instagram.
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: Per registrare l'audio dei video da pubblicare su Instagram.

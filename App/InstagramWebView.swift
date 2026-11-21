@@ -31,6 +31,11 @@ struct InstagramWebView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         config.websiteDataStore = .default() // cookie persistenti: il login resta sul telefono
+        // Senza questo, su iPhone video, storie e reel si aprono nel player di sistema a schermo intero.
+        config.allowsInlineMediaPlayback = true
+        // Ci si presenta come Safari: con lo user agent di WKWebView Instagram può nascondere funzioni.
+        let ios = UIDevice.current.systemVersion.split(separator: ".").first ?? "18"
+        config.applicationNameForUserAgent = "Version/\(ios).0 Mobile/15E148 Safari/604.1"
         config.userContentController.addUserScript(
             WKUserScript(source: Self.injectedJS, injectionTime: .atDocumentStart, forMainFrameOnly: true))
 
@@ -47,11 +52,15 @@ struct InstagramWebView: UIViewRepresentable {
 
         // Instagram è una single-page app: i cambi di pagina interni non passano dal
         // navigation delegate, ma aggiornano webView.url.
-        context.coordinator.urlObservation = webView.observe(\.url, options: [.new]) { wv, _ in
-            // shortcut: "/" si controlla solo nei caricamenti completi, perché il sito potrebbe
-            // togliere ?variant= dall'indirizzo e causare un ciclo; il link Home è comunque nascosto.
-            guard let url = wv.url, url.path != "/", !url.path.isEmpty,
-                  let target = InstagramRules.redirect(for: url) else { return }
+        let coordinator = context.coordinator
+        coordinator.urlObservation = webView.observe(\.url, options: [.new]) { wv, _ in
+            guard let url = wv.url, let target = InstagramRules.redirect(for: url) else { return }
+            if url.path.isEmpty || url.path == "/" {
+                // shortcut: il sito potrebbe togliere ?variant= dall'indirizzo e causare un ciclo di
+                // ricaricamenti; al massimo un rimando ogni 5 s. Se cicla, serve una regola sul contenuto.
+                guard Date().timeIntervalSince(coordinator.lastHomeRedirect) > 5 else { return }
+                coordinator.lastHomeRedirect = Date()
+            }
             wv.load(URLRequest(url: target))
         }
         context.coordinator.loadedTap = tapID
@@ -68,6 +77,7 @@ struct InstagramWebView: UIViewRepresentable {
     final class Coordinator: NSObject, WKNavigationDelegate {
         var urlObservation: NSKeyValueObservation?
         var loadedTap = 0
+        var lastHomeRedirect = Date.distantPast
 
         func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction,
                      decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
