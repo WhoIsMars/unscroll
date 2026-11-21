@@ -35,7 +35,8 @@ Fonte: scheda App Store e recensioni (letto il 2026-11-21).
 | 3 | MVP: SwiftUI + WKWebView su instagram.com, regole CSS/JS proprie, test | app che compila | fatto 2026-11-21: 18 test verdi, installata su iPhone XR; provati dall'utente: login, messaggi, ricerca, feed solo Seguiti, video in linea, scheda Profilo, reel bloccati (anche aperti da chat), barra di Instagram nascosta. Istantanee assenti dal sito, fuori scopo |
 | 4 | YouTube (niente Shorts, niente home suggerita) | | da fare |
 | 5 | Screen Time: blocco app native + schermata di rimando (solo se il Personal Team lo consente) | | da fare |
-| 6 | Pubblicazione: README, release, istruzioni di installazione (sideload/TestFlight) | | da fare |
+| 6 | Pubblicazione: README, release, istruzioni di installazione (sideload/TestFlight) | | README fatto 2026-11-21 (installazione con account gratuito); release da fare |
+| 3b | Attrito sul feed: 15 min al giorno, attesa di 10 s prima di aprirlo | | fatto 2026-11-21, attesa provata dall'utente; scadenza dei 15 min non provata |
 
 ## Cosa serve dall'utente
 
