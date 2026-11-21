@@ -27,4 +27,31 @@ public enum InstagramScripts {
         { passive: false, capture: true });
     }
     """
+
+    /// Nasconde la barra in basso di Instagram: doppione delle schede native, con buchi dove
+    /// stavano le icone già nascoste. Si riconosce come elemento fisso attaccato al fondo, basso,
+    /// che contiene il link ai messaggi (le classi di Instagram sono offuscate).
+    public static let hideBottomBar = """
+    function unscrollIsBottomBar(bottom, height, viewport) {
+      return Math.abs(bottom - viewport) <= 2 && height < 120;
+    }
+    if (typeof document !== 'undefined') {
+      const hide = () => {
+        for (const a of document.querySelectorAll('a[href="/direct/inbox/"]')) {
+          for (let n = a; n && n !== document.body; n = n.parentElement) {
+            if (getComputedStyle(n).position !== 'fixed') continue;
+            const r = n.getBoundingClientRect();
+            if (unscrollIsBottomBar(r.bottom, r.height, innerHeight)) n.style.setProperty('display', 'none', 'important');
+            break;
+          }
+        }
+      };
+      let queued = false;
+      new MutationObserver(() => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => { queued = false; hide(); });
+      }).observe(document.documentElement, { childList: true, subtree: true });
+    }
+    """
 }

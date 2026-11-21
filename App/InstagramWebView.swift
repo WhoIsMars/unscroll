@@ -25,6 +25,7 @@ struct InstagramWebView: UIViewRepresentable {
       m.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';
     });
     \(InstagramScripts.reelLock)
+    \(InstagramScripts.hideBottomBar)
     """
 
     func makeCoordinator() -> Coordinator { Coordinator() }

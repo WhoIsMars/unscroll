@@ -35,3 +35,23 @@ final class InstagramScriptsTests: XCTestCase {
         XCTAssertFalse(blocks("/p/XYZ/"))
     }
 }
+
+/// La barra in basso di Instagram (screenshot dell'utente, 2026-11-21) è un doppione delle schede native.
+final class InstagramBottomBarTests: XCTestCase {
+    private func isBottomBar(bottom: Double, height: Double, viewport: Double) -> Bool {
+        let ctx = JSContext()!
+        ctx.evaluateScript(InstagramScripts.hideBottomBar)
+        XCTAssertNil(ctx.exception)
+        return ctx.evaluateScript("unscrollIsBottomBar(\(bottom), \(height), \(viewport))").toBool()
+    }
+
+    func testFixedBarAtBottomIsHidden() {
+        XCTAssertTrue(isBottomBar(bottom: 771, height: 50, viewport: 771))
+    }
+
+    func testOtherFixedElementsStay() {
+        XCTAssertFalse(isBottomBar(bottom: 60, height: 60, viewport: 771))   // intestazione in alto
+        XCTAssertFalse(isBottomBar(bottom: 771, height: 771, viewport: 771)) // pagina intera (es. reel)
+        XCTAssertFalse(isBottomBar(bottom: 700, height: 50, viewport: 771))  // non attaccata al fondo
+    }
+}
