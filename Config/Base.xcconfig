@@ -1,0 +1,3 @@
+// Il Team di firma è personale: mettilo in Config/Local.xcconfig (escluso da git),
+// es. DEVELOPMENT_TEAM = ABCDE12345
+#include? "Local.xcconfig"

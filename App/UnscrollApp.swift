@@ -17,6 +17,7 @@ struct RootView: View {
         VStack(spacing: 0) {
             InstagramWebView(target: target, tapID: tapID)
             HStack {
+                tab("Feed", "house", InstagramRules.followingFeed)
                 tab("Messaggi", "paperplane", InstagramRules.inbox)
                 tab("Cerca", "magnifyingglass", InstagramRules.search)
             }

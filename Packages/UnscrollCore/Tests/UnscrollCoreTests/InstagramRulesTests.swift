@@ -30,9 +30,16 @@ final class InstagramRulesTests: XCTestCase {
         XCTAssertNil(redirect("https://www.instagram.com/someuser/"))
     }
 
-    func testFeedHomeGoesToInbox() {
-        XCTAssertEqual(redirect("https://www.instagram.com/"), InstagramRules.inbox.absoluteString)
-        XCTAssertEqual(redirect("https://www.instagram.com"), InstagramRules.inbox.absoluteString)
+    func testHomeGoesToFollowingFeed() {
+        let following = InstagramRules.followingFeed.absoluteString
+        XCTAssertEqual(redirect("https://www.instagram.com/"), following)
+        XCTAssertEqual(redirect("https://www.instagram.com"), following)
+        XCTAssertEqual(redirect("https://www.instagram.com/?variant=home"), following)
+    }
+
+    func testFollowingAndFavoritesFeedsAreAllowed() {
+        XCTAssertNil(redirect("https://www.instagram.com/?variant=following"))
+        XCTAssertNil(redirect("https://www.instagram.com/?variant=favorites"))
     }
 
     func testOtherHostsAreUntouched() {
@@ -47,5 +54,6 @@ final class InstagramRulesInvariantTests: XCTestCase {
     func testRedirectTargetsAreAllowed() {
         XCTAssertNil(InstagramRules.redirect(for: InstagramRules.inbox))
         XCTAssertNil(InstagramRules.redirect(for: InstagramRules.search))
+        XCTAssertNil(InstagramRules.redirect(for: InstagramRules.followingFeed))
     }
 }
