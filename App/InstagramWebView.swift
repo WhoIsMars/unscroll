@@ -11,7 +11,7 @@ struct InstagramWebView: UIViewRepresentable {
 
     // Le classi di Instagram sono offuscate: si nascondono i link per href.
     private static let hideCSS = """
-    a[href="/"], a[href^="/reels/"], a[href="/explore/"],
+    a[href="/"], a[href="/reels/"], a[href="/explore/"],
     a[href*="apps.apple.com"], a[href^="instagram://"] { display: none !important; }
     """
 
@@ -54,7 +54,13 @@ struct InstagramWebView: UIViewRepresentable {
         // navigation delegate, ma aggiornano webView.url.
         let coordinator = context.coordinator
         coordinator.urlObservation = webView.observe(\.url, options: [.new]) { wv, _ in
-            guard let url = wv.url, let target = InstagramRules.redirect(for: url) else { return }
+            guard let url = wv.url else { return }
+            defer { coordinator.lastURL = wv.url }
+            if InstagramRules.isReelSwipe(from: coordinator.lastURL, to: url), let back = coordinator.lastURL {
+                wv.load(URLRequest(url: back)) // un reel alla volta: si resta su quello aperto
+                return
+            }
+            guard let target = InstagramRules.redirect(for: url) else { return }
             if url.path.isEmpty || url.path == "/" {
                 // shortcut: il sito potrebbe togliere ?variant= dall'indirizzo e causare un ciclo di
                 // ricaricamenti; al massimo un rimando ogni 5 s. Se cicla, serve una regola sul contenuto.
@@ -78,6 +84,7 @@ struct InstagramWebView: UIViewRepresentable {
         var urlObservation: NSKeyValueObservation?
         var loadedTap = 0
         var lastHomeRedirect = Date.distantPast
+        var lastURL: URL?
 
         func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction,
                      decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {

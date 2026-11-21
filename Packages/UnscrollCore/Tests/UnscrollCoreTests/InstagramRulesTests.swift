@@ -9,7 +9,23 @@ final class InstagramRulesTests: XCTestCase {
     func testReelsFeedGoesToInbox() {
         XCTAssertEqual(redirect("https://www.instagram.com/reels/"), InstagramRules.inbox.absoluteString)
         XCTAssertEqual(redirect("https://www.instagram.com/reels"), InstagramRules.inbox.absoluteString)
-        XCTAssertEqual(redirect("https://instagram.com/reels/C1abc/?igsh=x"), InstagramRules.inbox.absoluteString)
+    }
+
+    // Instagram riscrive /reel/<id>/ in /reels/<id>/: il reel singolo deve restare permesso.
+    func testSingleReelViewerIsAllowed() {
+        XCTAssertNil(redirect("https://www.instagram.com/reels/DgAZav0jF60/"))
+        XCTAssertNil(redirect("https://instagram.com/reels/C1abc/?igsh=x"))
+    }
+
+    // Passare da un reel a un altro nel visualizzatore è lo scorrimento infinito da bloccare.
+    func testReelSwipeIsDetected() {
+        let a = URL(string: "https://www.instagram.com/reels/AAA/")!
+        let b = URL(string: "https://www.instagram.com/reels/BBB/")!
+        XCTAssertTrue(InstagramRules.isReelSwipe(from: a, to: b))
+        XCTAssertFalse(InstagramRules.isReelSwipe(from: a, to: a))
+        XCTAssertFalse(InstagramRules.isReelSwipe(from: URL(string: "https://www.instagram.com/reel/AAA/")!, to: a))
+        XCTAssertFalse(InstagramRules.isReelSwipe(from: URL(string: "https://www.instagram.com/direct/t/1/")!, to: b))
+        XCTAssertFalse(InstagramRules.isReelSwipe(from: nil, to: b))
     }
 
     func testExploreGridGoesToSearch() {
@@ -55,5 +71,19 @@ final class InstagramRulesInvariantTests: XCTestCase {
         XCTAssertNil(InstagramRules.redirect(for: InstagramRules.inbox))
         XCTAssertNil(InstagramRules.redirect(for: InstagramRules.search))
         XCTAssertNil(InstagramRules.redirect(for: InstagramRules.followingFeed))
+    }
+}
+
+final class InstagramProfileTests: XCTestCase {
+    func testProfileURLFromTypedUsername() {
+        XCTAssertEqual(InstagramRules.profileURL(username: " @__whoismars__ ")?.absoluteString,
+                       "https://www.instagram.com/__whoismars__/")
+        XCTAssertEqual(InstagramRules.profileURL(username: "a.b/../x?y")?.absoluteString,
+                       "https://www.instagram.com/a.b..xy/")
+    }
+
+    func testEmptyUsernameGivesNoURL() {
+        XCTAssertNil(InstagramRules.profileURL(username: ""))
+        XCTAssertNil(InstagramRules.profileURL(username: " @/ "))
     }
 }
